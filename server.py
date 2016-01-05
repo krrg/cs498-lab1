@@ -89,8 +89,9 @@ class ServerClient(object):
     def handle_DEL(self, chunks):
         if len(chunks) != 2:
             return self.handle_BAD_LENGTH(chunks)
+        result = 0 if globalStore.get(chunks[1]) is None else 1
         globalStore.delete(chunks[1])
-
+        self.send("{}\n".format(result))
 
     def handle_INVALID(self, chunks):
         self.send("Invalid command `{}`\n".format(chunks[0]))
