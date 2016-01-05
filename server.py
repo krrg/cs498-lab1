@@ -27,7 +27,7 @@ class Server(object):
 
     def start(self):
         self.server = pyuv.TCP(pyuv.Loop.default_loop())
-        self.server.bind(('0.0.0.0', 6379))
+        self.server.bind(('0.0.0.0', 6379))  # Notice the tuple parameter
         self.server.listen(self.handle_pending_client)
 
         # Make sure to listen for SIGINT to happen so ^C works.
@@ -61,8 +61,45 @@ class ServerClient(object):
         self.client.close()
 
     def parse_command(self):
-        print "Command: ", self.data
+        chunks = self.data.strip().split()
+
+        if chunks[0] == 'GET':
+            self.handle_GET(chunks)
+        elif chunks[0] == 'SET':
+            self.handle_SET(chunks)
+        elif chunks[0] == 'DEL':
+            self.handle_DEL(chunks)
+        else:
+            self.handle_INVALID()
+
         self.data = ""
+
+    def handle_GET(self, chunks):
+        if len(chunks) != 2:
+            return self.handle_BAD_LENGTH(chunks)
+        value = str(globalStore.get(chunks[1]))
+        self.send("{}\n".format(value))
+
+    def handle_SET(self, chunks):
+        if len(chunks) != 3:
+            return self.handle_BAD_LENGTH(chunks)
+        globalStore.set(chunks[1], chunks[2])
+        self.send("1\n")
+
+    def handle_DEL(self, chunks):
+        if len(chunks) != 2:
+            return self.handle_BAD_LENGTH(chunks)
+        globalStore.delete(chunks[1])
+
+
+    def handle_INVALID(self, chunks):
+        self.send("Invalid command `{}`\n".format(chunks[0]))
+
+    def handle_BAD_LENGTH(self, chunks):
+        self.send("Wrong number of parameters ({}) for command `{}`\n".format(len(chunks), chunks[0]))
+
+    def send(self, data):
+        self.client.write(data)
 
     def handle_data_available(self, client, data, err):
         if err:
