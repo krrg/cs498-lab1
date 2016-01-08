@@ -1,0 +1,25 @@
+{
+  "name": "cs498-lab1",
+  "version": "1.0.0",
+  "description": "In CS 360 you used OS level polling routines like `select` or `epoll` to write an HTTP server.  In this lab, we will move up a level of abstraction and use a cross-platform library called `libuv` to write a simple key-value store server, after the spirit of Redis.",
+  "main": "testclient.js",
+  "dependencies": {
+    "bluebird": "^3.1.1",
+    "lodash": "^3.10.1",
+    "mocha": "^2.3.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/krrg/cs498-lab1.git"
+  },
+  "author": "Ken Reese",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/krrg/cs498-lab1/issues"
+  },
+  "homepage": "https://github.com/krrg/cs498-lab1#readme"
+}
